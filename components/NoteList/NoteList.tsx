@@ -1,51 +1,59 @@
+// components/NoteList/NoteList.tsx
 'use client';
 
-import css from './NoteList.module.css';
+import React from 'react';
 import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { deleteNote } from '@/lib/api';
+
 import type { Note } from '@/types/note';
+import { deleteNote } from '@/lib/api';
+
+import css from './NoteList.module.css';
 
 interface NoteListProps {
   notes: Note[];
-  isLoading: boolean;
-  isError: boolean;
 }
 
-const NoteList = ({ notes, isLoading, isError }: NoteListProps) => {
+const NoteList: React.FC<NoteListProps> = ({ notes }) => {
   const queryClient = useQueryClient();
 
-  const { mutate } = useMutation({
-    mutationFn: deleteNote,
+  const { mutate, isPending } = useMutation({
+    mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Something went wrong.</p>;
+  if (!notes.length) {
+    return <p>You have no notes yet.</p>;
+  }
 
   return (
     <ul className={css.list}>
       {notes.map(note => (
-        <li key={note.id} className={css.card}>
-          <h3 className={css.title}>{note.title}</h3>
+        <li key={note.id} className={css.listItem}>
+          <h2 className={css.title}>{note.title}</h2>
 
+          {/* content всегда рендерим */}
           <p className={css.content}>{note.content}</p>
 
-          <span className={css.tag}>{note.tag}</span>
+          <div className={css.footer}>
+            <span className={css.tag}>{note.tag}</span>
 
-          <div className={css.btns}>
-            <Link href={`/notes/${note.id}`} className={css.detailsBtn}>
-              View details
-            </Link>
+            <div>
+              <Link href={`/notes/${note.id}`} className={css.link}>
+                View details
+              </Link>
 
-            <button
-              className={css.deleteBtn}
-              onClick={() => mutate(note.id)}
-            >
-              Delete
-            </button>
+              <button
+                type="button"
+                className={css.button}
+                onClick={() => mutate(note.id)}
+                disabled={isPending}
+              >
+                {isPending ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
           </div>
         </li>
       ))}

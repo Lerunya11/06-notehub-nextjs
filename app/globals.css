@@ -1,42 +1,96 @@
-/* === Глобальная «светлая» тема, без color-scheme: dark === */
-:root {
-  --bg: #f5f6f8;
-  --text: #212529;
-  --muted: #6c757d;
-  --primary: #0d6efd;
-  --primary-600: #0b5ed7;
-  --danger: #dc3545;
-  --danger-600: #bb2d3b;
-  --card: #fff;
-  --border: #dee2e6;
-  --shadow: 0 2px 8px rgba(0,0,0,.06);
-}
 
 *,
 *::before,
-*::after { box-sizing: border-box; }
-
-html, body, #root {
-  height: 100%;
+*::after {
+  box-sizing: border-box;
 }
 
+
+html,
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  /* Удаляем темную схему из шаблона Vite */
-  color-scheme: light;
+  padding: 0;
 }
 
-/* Сбросы мелкие */
-button, input, select, textarea {
-  font: inherit;
+
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+
+  background-color: #f8f9fa; 
+  color: #212529;            
+
+  line-height: 1.5;
 }
 
-/* Уведомления/состояния */
-.state {
-  padding: 24px;
-  text-align: center;
-  color: var(--muted);
+
+
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: 600;
+}
+
+
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+}
+
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  outline: none;
+}
+
+
+html {
+  scroll-behavior: smooth;
 }

@@ -1,58 +1,54 @@
 // components/NoteForm/NoteForm.tsx
 'use client';
 
-import { Formik, Form, Field, ErrorMessage, FormikHelpers } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createNote } from '@/lib/api';
+import type { CreateNotePayload } from '@/lib/api';
+
 import css from './NoteForm.module.css';
 
 interface NoteFormProps {
   onCancel: () => void;
 }
 
-export type NoteTag = 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping';
-
-interface FormValues {
-  title: string;
-  content: string;
-  tag: NoteTag;
-}
-
-const schema = Yup.object({
+const validationSchema = Yup.object({
   title: Yup.string()
     .min(3, 'Title must be at least 3 characters')
     .max(50, 'Title must be at most 50 characters')
-    .required('Required'),
-  content: Yup.string()
-    .max(500, 'Content must be at most 500 characters')
-    .nullable(),
-  tag: Yup.mixed<NoteTag>()
+    .required('Title is required'),
+  content: Yup.string().max(500, 'Content must be at most 500 characters'),
+  tag: Yup.string()
     .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'])
-    .required('Required'),
+    .required('Tag is required'),
 });
 
-const initialValues: FormValues = {
-  title: '',
-  content: '',
-  tag: 'Todo',
-};
-
 const NoteForm = ({ onCancel }: NoteFormProps) => {
-  const handleSubmit = async (
-    values: FormValues,
-    { resetForm }: FormikHelpers<FormValues>
-  ) => {
-    await createNote(values);
-    resetForm();
-    onCancel();
-  };
+  const queryClient = useQueryClient();
+
+  const createNoteMutation = useMutation({
+    mutationFn: (values: CreateNotePayload) => createNote(values),
+    onSuccess: () => {
+     
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+    },
+  });
 
   return (
-    <Formik<FormValues>
-      initialValues={initialValues}
-      validationSchema={schema}
-      onSubmit={handleSubmit}
+    <Formik
+      initialValues={{
+        title: '',
+        content: '',
+        tag: 'Todo',
+      }}
+      validationSchema={validationSchema}
+      onSubmit={async (values, { resetForm }) => {
+        await createNoteMutation.mutateAsync(values);
+        resetForm();
+        onCancel();
+      }}
     >
       {({ isSubmitting }) => (
         <Form className={css.form}>
@@ -61,8 +57,8 @@ const NoteForm = ({ onCancel }: NoteFormProps) => {
             <Field
               id="title"
               name="title"
+              type="text"
               className={css.input}
-              placeholder="Enter note title"
             />
             <ErrorMessage
               name="title"
@@ -79,7 +75,6 @@ const NoteForm = ({ onCancel }: NoteFormProps) => {
               name="content"
               rows={8}
               className={css.textarea}
-              placeholder="Write your note..."
             />
             <ErrorMessage
               name="content"
@@ -116,9 +111,9 @@ const NoteForm = ({ onCancel }: NoteFormProps) => {
             <button
               type="submit"
               className={css.submitButton}
-              disabled={isSubmitting}
+              disabled={isSubmitting || createNoteMutation.isLoading}
             >
-              {isSubmitting ? 'Saving...' : 'Create note'}
+              {createNoteMutation.isLoading ? 'Saving...' : 'Create note'}
             </button>
           </div>
         </Form>

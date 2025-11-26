@@ -1,4 +1,4 @@
-// app/notes/[id]/page.tsx
+
 import {
   QueryClient,
   dehydrate,
@@ -9,14 +9,14 @@ import { fetchNoteById } from '@/lib/api';
 import NoteDetailsClient from './NoteDetails.client';
 
 interface NoteDetailsPageProps {
-  // ВАЖНО: params — это Promise
+  
   params: Promise<{ id: string }>;
 }
 
 export default async function NoteDetailsPage({
   params,
 }: NoteDetailsPageProps) {
-  // Правильно достаём id
+ 
   const { id } = await params;
 
   const queryClient = new QueryClient();
@@ -28,7 +28,7 @@ export default async function NoteDetailsPage({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      {/* id внутри берётся через useParams в клиентском компоненте */}
+     
       <NoteDetailsClient />
     </HydrationBoundary>
   );

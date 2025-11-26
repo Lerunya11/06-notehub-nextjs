@@ -1,4 +1,4 @@
-// app/notes/Notes.client.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -10,9 +10,11 @@ import Pagination from '@/components/Pagination/Pagination';
 import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import SearchBox from '@/components/SearchBox/SearchBox';
+
 import { fetchNotes } from '@/lib/api';
 import type { FetchNotesParams, FetchNotesResponse } from '@/types/note';
 import css from './NotesPage.module.css';
+
 
 const PER_PAGE = 12;
 
@@ -21,16 +23,20 @@ interface NotesClientProps {
 }
 
 const NotesClient = ({ initialParams }: NotesClientProps) => {
+ 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  
   const [params, setParams] = useState<FetchNotesParams>({
     page: initialParams.page ?? 1,
     perPage: initialParams.perPage ?? PER_PAGE,
     search: initialParams.search,
   });
 
+  
   const [searchInput, setSearchInput] = useState(initialParams.search ?? '');
 
+  
   const debouncedUpdateSearch = useDebouncedCallback((value: string) => {
     setParams(prev => ({
       ...prev,
@@ -44,6 +50,7 @@ const NotesClient = ({ initialParams }: NotesClientProps) => {
     debouncedUpdateSearch(value);
   };
 
+  
   const { data, isLoading, isError } = useQuery<FetchNotesResponse>({
     queryKey: ['notes', params],
     queryFn: () => fetchNotes(params),
@@ -65,8 +72,10 @@ const NotesClient = ({ initialParams }: NotesClientProps) => {
   return (
     <div className={css.app}>
       <header className={css.toolbar}>
+        
         <SearchBox value={searchInput} onChange={handleSearchChange} />
 
+        
         {shouldShowPagination && (
           <Pagination
             page={params.page ?? 1}
@@ -75,6 +84,7 @@ const NotesClient = ({ initialParams }: NotesClientProps) => {
           />
         )}
 
+       
         <button
           type="button"
           className={css.button}
@@ -85,11 +95,12 @@ const NotesClient = ({ initialParams }: NotesClientProps) => {
       </header>
 
       <main className={css.main}>
-  {notes.length > 0 && (
-    <NoteList notes={notes} />
-  )}
-</main>
-
+        <NoteList
+          notes={notes}
+          isLoading={isLoading}
+          isError={!!isError}
+        />
+      </main>
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
