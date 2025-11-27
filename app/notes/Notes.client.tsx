@@ -85,13 +85,16 @@ const NotesClient = ({ initialParams }: NotesClientProps) => {
         </button>
       </header>
 
-      <main className={css.main}>
-        <NoteList
-          notes={notes}
-          isLoading={isLoading}
-          isError={!!isError}
-        />
+            <main className={css.main}>
+        {isLoading && <p>Loading, please wait...</p>}
+
+        {isError && <p>Something went wrong.</p>}
+
+        {!isLoading && !isError && notes.length > 0 && (
+          <NoteList notes={notes} />
+        )}
       </main>
+
 
       {isModalOpen && (
         <Modal onClose={handleCloseModal}>
