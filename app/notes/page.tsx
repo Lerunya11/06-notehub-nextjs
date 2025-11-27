@@ -7,7 +7,8 @@ import {
 } from '@tanstack/react-query';
 
 import { fetchNotes } from '@/lib/api';
-import type { FetchNotesParams } from '@/types/note';
+import type { FetchNotesParams } from '@/lib/api';
+
 import NotesClient from './Notes.client';
 
 const PER_PAGE = 12;
