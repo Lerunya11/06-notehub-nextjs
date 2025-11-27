@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createNote } from '@/lib/api';
-import type { CreateNotePayload } from '@/types/note';
+import type { CreateNotePayload } from '@/lib/api';
 
 import css from './NoteForm.module.css';
 

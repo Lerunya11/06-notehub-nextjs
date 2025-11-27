@@ -9,9 +9,9 @@ import Pagination from '@/components/Pagination/Pagination';
 import Modal from '@/components/Modal/Modal';
 import NoteForm from '@/components/NoteForm/NoteForm';
 import SearchBox from '@/components/SearchBox/SearchBox';
-
 import { fetchNotes } from '@/lib/api';
 import type { FetchNotesParams, FetchNotesResponse } from '@/lib/api';
+
 
 import css from './NotesPage.module.css';
 
