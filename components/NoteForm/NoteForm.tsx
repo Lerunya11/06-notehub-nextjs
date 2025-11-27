@@ -6,7 +6,7 @@ import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { createNote } from '@/lib/api';
-import type { CreateNotePayload } from '@/lib/api';
+import type { CreateNotePayload } from '@/types/note';
 
 import css from './NoteForm.module.css';
 
@@ -25,41 +25,43 @@ const validationSchema = Yup.object({
     .required('Tag is required'),
 });
 
+const initialValues: CreateNotePayload = {
+  title: '',
+  content: '',
+  tag: 'Todo',
+};
+
 const NoteForm = ({ onCancel }: NoteFormProps) => {
   const queryClient = useQueryClient();
 
   const createNoteMutation = useMutation({
     mutationFn: (values: CreateNotePayload) => createNote(values),
     onSuccess: () => {
-     
+      
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
-  return (
-    <Formik
-      initialValues={{
-        title: '',
-        content: '',
-        tag: 'Todo',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={async (values, { resetForm }) => {
-        await createNoteMutation.mutateAsync(values);
+  const handleSubmit = (values: CreateNotePayload, { resetForm }: any) => {
+    createNoteMutation.mutate(values, {
+      onSuccess: () => {
         resetForm();
         onCancel();
-      }}
+      },
+    });
+  };
+
+  return (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
     >
       {({ isSubmitting }) => (
         <Form className={css.form}>
           <div className={css.formGroup}>
             <label htmlFor="title">Title</label>
-            <Field
-              id="title"
-              name="title"
-              type="text"
-              className={css.input}
-            />
+            <Field id="title" name="title" type="text" className={css.input} />
             <ErrorMessage
               name="title"
               component="span"
@@ -107,13 +109,12 @@ const NoteForm = ({ onCancel }: NoteFormProps) => {
             >
               Cancel
             </button>
-
             <button
               type="submit"
               className={css.submitButton}
-              disabled={isSubmitting || createNoteMutation.isLoading}
+              disabled={isSubmitting || createNoteMutation.isPending}
             >
-              {createNoteMutation.isLoading ? 'Saving...' : 'Create note'}
+              Create note
             </button>
           </div>
         </Form>

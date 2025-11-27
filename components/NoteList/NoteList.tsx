@@ -1,7 +1,6 @@
 // components/NoteList/NoteList.tsx
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -14,18 +13,22 @@ interface NoteListProps {
   notes: Note[];
 }
 
-const NoteList: React.FC<NoteListProps> = ({ notes }) => {
+const NoteList = ({ notes }: NoteListProps) => {
   const queryClient = useQueryClient();
 
-  const { mutate, isPending } = useMutation({
+  const deleteNoteMutation = useMutation({
     mutationFn: (id: string) => deleteNote(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notes'] });
     },
   });
 
-  if (!notes.length) {
-    return <p>You have no notes yet.</p>;
+  const handleDelete = (id: string) => {
+    deleteNoteMutation.mutate(id);
+  };
+
+  if (notes.length === 0) {
+    return null;
   }
 
   return (
@@ -34,24 +37,27 @@ const NoteList: React.FC<NoteListProps> = ({ notes }) => {
         <li key={note.id} className={css.listItem}>
           <h2 className={css.title}>{note.title}</h2>
 
-          {/* content всегда рендерим */}
+          
           <p className={css.content}>{note.content}</p>
 
           <div className={css.footer}>
+            
             <span className={css.tag}>{note.tag}</span>
 
             <div>
-              <Link href={`/notes/${note.id}`} className={css.link}>
+              <Link
+                href={`/notes/${note.id}`}
+                className={css.link}
+              >
                 View details
               </Link>
 
               <button
                 type="button"
                 className={css.button}
-                onClick={() => mutate(note.id)}
-                disabled={isPending}
+                onClick={() => handleDelete(note.id)}
               >
-                {isPending ? 'Deleting...' : 'Delete'}
+                Delete
               </button>
             </div>
           </div>
