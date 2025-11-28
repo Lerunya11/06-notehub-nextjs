@@ -2,6 +2,7 @@
 'use client';
 
 import { Formik, Form, Field, ErrorMessage } from 'formik';
+import type { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -42,14 +43,18 @@ const NoteForm = ({ onCancel }: NoteFormProps) => {
     },
   });
 
-  const handleSubmit = (values: CreateNotePayload, { resetForm }: any) => {
-    createNoteMutation.mutate(values, {
-      onSuccess: () => {
-        resetForm();
-        onCancel();
-      },
-    });
-  };
+  const handleSubmit = (
+  values: CreateNotePayload,
+  { resetForm }: FormikHelpers<CreateNotePayload>
+) => {
+  createNoteMutation.mutate(values, {
+    onSuccess: () => {
+      resetForm();
+      onCancel(); 
+    },
+  });
+};
+
 
   return (
     <Formik
